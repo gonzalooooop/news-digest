@@ -124,6 +124,32 @@
     box-shadow: var(--shadow);
     padding: 16px 18px;
   }
+  .calendar-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .calendar-summary-text {
+    font-weight: 700;
+    font-family: 'Consolas', 'SFMono-Regular', ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.9rem;
+    color: var(--text);
+  }
+  .calendar-toggle {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 12px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--accent);
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .calendar-toggle:hover { border-color: var(--accent); }
+  .calendar-body { margin-top: 14px; }
   .calendar-header {
     display: flex;
     align-items: center;
@@ -295,6 +321,7 @@
   .item-meta {
     font-size: 0.8rem;
     color: var(--text-muted);
+    margin-left: 14px;
   }
   .item-stat {
     font-family: 'Consolas', 'SFMono-Regular', ui-monospace, monospace;
@@ -339,17 +366,23 @@
   </div>
 
   <div class="calendar-card">
-    <div class="calendar-header">
-      <span class="calendar-title" id="calendarTitle"></span>
-      <div class="calendar-nav">
-        <button type="button" id="calPrev" aria-label="이전 달">◀</button>
-        <button type="button" id="calNext" aria-label="다음 달">▶</button>
-      </div>
+    <div class="calendar-summary">
+      <span class="calendar-summary-text" id="calendarSummaryText"></span>
+      <button type="button" class="calendar-toggle" id="calToggle">펼치기</button>
     </div>
-    <div class="calendar-grid" id="calendarGrid"></div>
-    <div class="calendar-filter-bar" id="filterBar">
-      <span id="filterLabel"></span>
-      <button type="button" id="calReset">전체 보기</button>
+    <div class="calendar-body" id="calendarBody" style="display: none;">
+      <div class="calendar-header">
+        <span class="calendar-title" id="calendarTitle"></span>
+        <div class="calendar-nav">
+          <button type="button" id="calPrev" aria-label="이전 달">◀</button>
+          <button type="button" id="calNext" aria-label="다음 달">▶</button>
+        </div>
+      </div>
+      <div class="calendar-grid" id="calendarGrid"></div>
+      <div class="calendar-filter-bar" id="filterBar">
+        <span id="filterLabel"></span>
+        <button type="button" id="calReset">전체 보기</button>
+      </div>
     </div>
   </div>
 
@@ -491,7 +524,14 @@
     calMonthIdx = now.getMonth();
   }
 
+  function syncCalendarSummary() {
+    document.getElementById('calendarSummaryText').textContent = selectedDate
+      ? `${selectedDate} 브리핑 보는 중`
+      : `${calYear}년 ${calMonthIdx + 1}월`;
+  }
+
   function renderCalendar() {
+    syncCalendarSummary();
     document.getElementById('calendarTitle').textContent = `${calYear}년 ${calMonthIdx + 1}월`;
     const grid = document.getElementById('calendarGrid');
     const firstDow = new Date(calYear, calMonthIdx, 1).getDay();
@@ -538,6 +578,15 @@
     selectedDate = null;
     renderCalendar();
     renderFeed();
+  });
+
+  const calToggle = document.getElementById('calToggle');
+  const calendarBody = document.getElementById('calendarBody');
+  let calendarExpanded = false;
+  calToggle.addEventListener('click', () => {
+    calendarExpanded = !calendarExpanded;
+    calendarBody.style.display = calendarExpanded ? 'block' : 'none';
+    calToggle.textContent = calendarExpanded ? '접기' : '펼치기';
   });
 
   renderCalendar();
