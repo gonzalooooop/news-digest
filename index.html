@@ -321,8 +321,8 @@
   .item-meta {
     font-size: 0.8rem;
     color: var(--text-muted);
-    margin-left: 14px;
   }
+  .section-car .item-meta { margin-left: 14px; }
   .item-stat {
     font-family: 'Consolas', 'SFMono-Regular', ui-monospace, monospace;
     font-variant-numeric: tabular-nums;
@@ -455,7 +455,7 @@
         </div>
         ${entry.headline ? `<div class="headline">${escapeHtml(entry.headline)}</div>` : ''}
         ${SECTION_DEFS.map((def) => `
-          <div class="section">
+          <div class="section section-${def.rail}">
             <div class="section-label"><span class="rail ${def.rail}"></span>${def.label}</div>
             ${renderItems(def.key, entry[def.key])}
           </div>
@@ -524,10 +524,21 @@
     calMonthIdx = now.getMonth();
   }
 
+  function formatDateWithWeekday(dateStr) {
+    const [y, m, d] = dateStr.split('-').map(Number);
+    const dow = new Date(y, m - 1, d).getDay();
+    return `${y}년 ${m}월 ${d}일(${DOW[dow]})`;
+  }
+
   function syncCalendarSummary() {
-    document.getElementById('calendarSummaryText').textContent = selectedDate
-      ? `${selectedDate} 브리핑 보는 중`
-      : `${calYear}년 ${calMonthIdx + 1}월`;
+    const el = document.getElementById('calendarSummaryText');
+    if (selectedDate) {
+      el.textContent = `${formatDateWithWeekday(selectedDate)} 브리핑 보는 중`;
+    } else if (ENTRIES.length > 0) {
+      el.textContent = formatDateWithWeekday(ENTRIES[0].date);
+    } else {
+      el.textContent = `${calYear}년 ${calMonthIdx + 1}월`;
+    }
   }
 
   function renderCalendar() {
