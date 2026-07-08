@@ -360,8 +360,9 @@
       <span class="clock" id="lastUpdated"></span>
     </div>
     <div class="schedule-strip">
-      <span><b>☀️ 아침판</b> 매일 09:30 · 전날 20:30~09:30</span>
-      <span><b>🌙 저녁판</b> 매일 20:30 · 09:30~20:30</span>
+      <span><b>☀️ 조간</b> 매일 09:30 · 전날 20:30~09:30</span>
+      <span><b>🌤️ 주간</b> 매일 13:30 · 09:30~13:30</span>
+      <span><b>🌙 석간</b> 매일 20:30 · 13:30~20:30</span>
     </div>
   </div>
 
@@ -388,7 +389,7 @@
 
   <div class="feed" id="feed"></div>
 
-  <footer>자동 생성 페이지 · 매일 오전 9시 30분, 오후 8시 30분에 업데이트됩니다. 날짜를 클릭하면 해당 브리핑만 볼 수 있습니다.</footer>
+  <footer>자동 생성 페이지 · 매일 오전 9시 30분, 오후 1시 30분, 오후 8시 30분에 업데이트됩니다. 날짜를 클릭하면 해당 브리핑만 볼 수 있습니다.</footer>
 </div>
 
 <script>
@@ -446,7 +447,8 @@
   }
 
   function renderEntry(entry) {
-    const editionLabel = entry.edition === 'morning' ? '☀️ 아침판' : '🌙 저녁판';
+    const EDITION_LABELS = { morning: '☀️ 조간', midday: '🌤️ 주간', evening: '🌙 석간' };
+    const editionLabel = EDITION_LABELS[entry.edition] || entry.edition;
     return `
       <article class="entry">
         <div class="entry-header">
@@ -562,7 +564,7 @@
       const hasEntry = !!info;
       const isSelected = key === selectedDate;
       const dots = hasEntry
-        ? `<span class="calendar-dots">${info.morning ? '☀️' : ''}${info.evening ? '🌙' : ''}</span>`
+        ? `<span class="calendar-dots">${info.morning ? '☀️' : ''}${info.midday ? '🌤️' : ''}${info.evening ? '🌙' : ''}</span>`
         : '';
       const classes = ['calendar-day', hasEntry ? 'has-entry' : '', isSelected ? 'selected' : ''].filter(Boolean).join(' ');
       html += `<div class="${classes}" data-date="${hasEntry ? key : ''}">${day}${dots}</div>`;
